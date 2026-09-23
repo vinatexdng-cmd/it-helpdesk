@@ -58,3 +58,51 @@
 .portal-footer a{color:#fff;text-decoration:none;font-weight:750}
 @media(max-width:1050px){.portal-function-grid{grid-template-columns:repeat(2,1fr)}.portal-hero{grid-template-columns:1fr}.portal-hero-side{display:none}}
 @media(max-width:800px){.portal-container{padding:0 16px 35px}.portal-hero{margin:0 -16px 28px;padding:42px 20px;min-height:0}.portal-hero h1{font-size:33px}.portal-function-grid,.portal-metrics,.portal-bars{grid-template-columns:1fr}.portal-dashboard,.portal-recent{padding:18px}.portal-section-heading{align-items:flex-start;flex-direction:column;gap:8px}.portal-section-heading.compact{flex-direction:row;align-items:center}.portal-footer{display:block}.portal-footer a{display:inline-block;margin-top:12px}}
+
+/* Vinatex corporate header */
+.app-nav{position:sticky;top:0;z-index:50;background:#fff;color:#172033;border-bottom:1px solid #dce8f3;box-shadow:0 4px 18px rgba(0,43,85,.09);backdrop-filter:blur(10px)}
+.nav-top{background:linear-gradient(110deg,#002b55 0%,#003b73 55%,#005baa 100%);color:#fff}
+.nav-inner{max-width:1280px;margin:0 auto;min-height:76px;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:25px}
+.brand{display:inline-flex;align-items:center;gap:11px;color:#fff;text-decoration:none;min-width:220px}
+.brand-mark{width:49px;height:34px;border:2.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;transform:skewX(-5deg);box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+.brand-mark span{font-family:Arial Black,Arial,sans-serif;font-size:17px;font-weight:900;letter-spacing:-2px;transform:skewX(5deg)}
+.brand-copy{display:flex;flex-direction:column;line-height:1}
+.brand-copy strong{font-family:Arial Black,Arial,sans-serif;font-size:22px;letter-spacing:1.5px}
+.brand-copy small{font-size:9px;font-weight:850;letter-spacing:.25em;margin-top:6px;color:#c7e5fb}
+.nav-user{display:flex;align-items:center;gap:14px}
+.user-profile{display:flex;align-items:center;gap:9px}
+.user-avatar{width:35px;height:35px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;color:#003b73;font-size:14px;font-weight:850}
+.user-copy{display:flex;flex-direction:column;line-height:1.15}
+.user-copy strong{font-size:12px;color:#fff}
+.user-copy small{font-size:10px;color:#bcd8ee;margin-top:4px}
+.logout-button{padding:8px 12px!important;border:1px solid rgba(255,255,255,.3)!important;border-radius:7px!important;background:rgba(255,255,255,.08)!important;color:#fff!important;box-shadow:none!important;font-size:11px!important}
+.logout-button:hover{background:rgba(255,255,255,.18)!important}
+.nav-menu{background:#fff}
+.nav-menu-inner{max-width:1280px;margin:0 auto;min-height:47px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.app-nav nav{display:flex;align-items:stretch;gap:2px;flex:1}
+.app-nav nav a{position:relative;display:inline-flex;align-items:center;gap:7px;padding:14px 14px 13px;text-decoration:none;font-size:12px;font-weight:800;color:#526a82;border-bottom:3px solid transparent;white-space:nowrap}
+.app-nav nav a:hover{color:#005baa;background:#f5f9fd}
+.app-nav nav a.active{color:#003b73;border-bottom-color:#005baa;background:#f4f9fe}
+.nav-icon{font-size:14px;line-height:1}
+.nav-home-action{display:inline-flex;align-items:center;justify-content:center;padding:8px 13px;border-radius:7px;background:#005baa;color:#fff;text-decoration:none;font-size:11px;font-weight:850;white-space:nowrap;box-shadow:0 4px 10px rgba(0,91,170,.16)}
+.nav-home-action:hover{background:#003b73}
+@media(max-width:800px){
+ .nav-inner{min-height:68px;padding:9px 16px}
+ .brand{min-width:0}
+ .brand-copy strong{font-size:18px}
+ .brand-copy small{font-size:8px}
+ .nav-user{gap:8px}
+ .user-copy{display:none}
+ .user-avatar{width:32px;height:32px}
+ .nav-menu-inner{padding:0 16px;overflow:auto}
+ .app-nav nav{overflow:auto;flex:none}
+ .app-nav nav a{padding:12px 10px;font-size:11px}
+ .nav-home-action{font-size:10px;padding:7px 10px}
+}
+@media(max-width:520px){
+ .brand-mark{width:42px;height:29px}
+ .brand-copy strong{font-size:16px}
+ .brand-copy small{margin-top:4px}
+ .logout-button{padding:7px 9px!important}
+ .nav-home-action{display:none}
+}
