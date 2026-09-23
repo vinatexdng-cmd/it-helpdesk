@@ -1,0 +1,9 @@
+"use client";
+import { useState } from "react";
+
+type Source={title:string;path:string;type:string;url:string};
+export default function AiCopilot(){
+ const [question,setQuestion]=useState(""); const [answer,setAnswer]=useState(""); const [sources,setSources]=useState<Source[]>([]); const [loading,setLoading]=useState(false); const [error,setError]=useState("");
+ async function ask(){ const q=question.trim(); if(!q)return; setLoading(true);setError("");setAnswer("");setSources([]); try{const r=await fetch("/api/ai/copilot",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q})}); const j=await r.json(); if(!r.ok)throw new Error(j.error||"Không thể gọi AI"); setAnswer(j.answer||"");setSources(j.sources||[]);}catch(e){setError(e instanceof Error?e.message:"Có lỗi xảy ra");}finally{setLoading(false);} }
+ return <section className="ai-box kb-copilot"><div className="kb-copilot-head"><div><strong>🤖 AI Copilot</strong><p>Hỏi về lỗi IT; AI sẽ tìm trong Knowledge Base và trả lời kèm nguồn.</p></div></div><div className="kb-question"><textarea value={question} onChange={e=>setQuestion(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();ask();}}} placeholder="Ví dụ: Máy tính không vào được WiFi phải xử lý thế nào?" aria-label="Câu hỏi cho AI Copilot"/><button type="button" onClick={ask} disabled={loading||!question.trim()}>{loading?"Đang xử lý...":"Hỏi AI"}</button></div>{error&&<div className="kb-ai-error">{error}</div>}{answer&&<div className="ai-answer">{answer}</div>}{sources.length>0&&<div className="ai-sources"><strong>📚 Nguồn Knowledge Base</strong>{sources.map(s=><a key={s.path} href={"/knowledge-base/document?path="+encodeURIComponent(s.path)}>{s.title} · {s.type}</a>)}</div>}</section>
+}
