@@ -23,7 +23,7 @@ export default function AiCopilot(){
  const [sources,setSources]=useState<Source[]>([]);
  const [loading,setLoading]=useState(false);
  const [error,setError]=useState("");
- const [ticketMsg,setTicketMsg]=useState("");
+ const [ticketMsg,setTicketMsg]=useState(""); const [ticketNo,setTicketNo]=useState("");
 
  async function ask(q=question){
    const value=q.trim(); if(!value||loading)return;
@@ -41,7 +41,7 @@ export default function AiCopilot(){
  async function createTicket(){
    const lastUser=[...turns].reverse().find(x=>x.role==="user")?.content||"Yêu cầu hỗ trợ IT";
    const lastAnswer=[...turns].reverse().find(x=>x.role==="assistant")?.content||"";
-   setTicketMsg("Đang tạo Ticket...");
+   setTicketMsg("Đang tạo Ticket..."); setTicketNo("");
    try{
      const r=await fetch("/api/tickets",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
        title:lastUser.slice(0,255),
@@ -50,7 +50,7 @@ export default function AiCopilot(){
        priority:"Normal"
      })});
      const j=await r.json(); if(!r.ok)throw new Error(j.error||"Không thể tạo Ticket");
-     setTicketMsg("Đã tạo "+j.ticket.ticket_no+" · Mở Ticket để IT tiếp tục xử lý.");
+     setTicketNo(j.ticket.ticket_no); setTicketMsg("Đã tạo "+j.ticket.ticket_no+" · IT có thể tiếp tục xử lý.");
    }catch(e){setTicketMsg(e instanceof Error?e.message:"Không thể tạo Ticket");}
  }
  return <section className="ai-box kb-copilot">
@@ -60,7 +60,7 @@ export default function AiCopilot(){
    <div className="kb-question"><textarea value={question} onChange={e=>setQuestion(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();ask();}}} placeholder="Ví dụ: Máy tính không vào được WiFi phải xử lý thế nào?" aria-label="Câu hỏi cho AI Copilot"/><button type="button" onClick={()=>ask()} disabled={loading||!question.trim()}>{loading?"Đang xử lý...":"Hỏi AI"}</button></div>
    {error&&<div className="kb-ai-error">{error}</div>}
    {turns.length>0&&<div className="kb-actions"><button type="button" onClick={createTicket}>🎫 Tạo Ticket từ cuộc trao đổi</button><button type="button" className="kb-secondary" onClick={()=>{setTurns([]);setSources([]);setError("");setTicketMsg("");}}>Cuộc hội thoại mới</button></div>}
-   {ticketMsg&&<div className="notice">{ticketMsg}</div>}
+   {ticketMsg&&<div className="notice">{ticketMsg}{ticketNo&&<> · <a href={"/tickets/"+encodeURIComponent(ticketNo)}>Xem Ticket →</a></>}</div>}
    {sources.length>0&&<div className="ai-sources"><strong>📚 Nguồn Knowledge Base được truy xuất</strong>{sources.map(s=><a key={s.path} href={"/knowledge-base/document?path="+encodeURIComponent(s.path)}>{s.title} · {s.type}</a>)}</div>}
  </section>;
 }
