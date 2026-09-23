@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-export async function GET(req:NextRequest){
-  const status=req.nextUrl.searchParams.get("status")||"All";
-  return NextResponse.json({
-    tickets:[],
-    status,
-    message:"Database adapter chưa được bật. Cấu hình DATABASE_URL để kích hoạt persistence."
-  });
-}
+import { getPool } from "@/lib/db";
+function ticketNo(n:number){return `HD-${new Date().getFullYear()}-${String(n).padStart(6,"0")}`;}
+export async function GET(req:NextRequest){try{const s=req.nextUrl.searchParams.get("status");const p=getPool();const r=s&&s!=="All"?await p.query("SELECT * FROM tickets WHERE status=$1 ORDER BY created_at DESC",[s]):await p.query("SELECT * FROM tickets ORDER BY created_at DESC");return NextResponse.json({tickets:r.rows});}catch(e){return NextResponse.json({error:e instanceof Error?e.message:"Database error"},{status:500});}}
+export async function POST(req:NextRequest){try{const b=await req.json();if(!b.title)return NextResponse.json({error:"title is required"},{status:400});const p=getPool();const c=await p.query("SELECT COUNT(*)::int AS n FROM tickets");const no=ticketNo(c.rows[0].n+1);const r=await p.query("INSERT INTO tickets(ticket_no,title,description,requester_name,requester_email,unit,asset,category,priority,status,assignee,sla_due_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'Open',$10,$11) RETURNING *",[no,b.title,b.description||null,b.requester_name||null,b.requester_email||null,b.unit||null,b.asset||null,b.category||"Other",b.priority||"Normal",b.assignee||null,b.sla_due_at||null]);return NextResponse.json({ticket:r.rows[0]},{status:201});}catch(e){return NextResponse.json({error:e instanceof Error?e.message:"Database error"},{status:500});}}
