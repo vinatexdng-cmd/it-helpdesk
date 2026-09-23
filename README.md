@@ -1,33 +1,20 @@
-# IT-Helpdesk
-Tổng hợp script, tài liệu kỹ thuật và case xử lý lỗi của IT Helpdesk.
-# 💼 IT Support
+# Vinatex IT Helpdesk WebApp
 
-Xin chào! Mình là **[Nguyễn Bảo]**, hiện đang theo đuổi lĩnh vực **IT Helpdesk / Technical Support**. Đây là nơi mình lưu trữ và chia sẻ:
+Webapp Next.js dành cho IT Helpdesk, đọc Knowledge Base, troubleshooting cases và scripts trực tiếp từ repository.
 
-- Các script tự động hóa nhỏ cho công việc Helpdesk.
-- Tài liệu hướng dẫn xử lý sự cố thực tế.
-- Các tình huống mình từng gặp và cách xử lý.
-- Tổng hợp công cụ và phần mềm mình từng sử dụng.
+## Chạy local
+```bash
+pnpm install
+pnpm dev
+```
 
----
+## Deploy Vercel
+Import repository vào Vercel và dùng mặc định Next.js. Thiết lập GITHUB_REPOSITORY, GITHUB_BRANCH và GITHUB_TOKEN. GITHUB_TOKEN chỉ được dùng server-side.
 
-## 🛠 Kỹ năng nổi bật
-
-- Quản lý hệ thống mạng nội bộ, chia sẻ máy in, map ổ đĩa.
-- Làm việc với Windows, Active Directory, và cơ bản về Linux.
-- Tạo user, phân quyền, reset password, remote desktop.
-- Viết script đơn giản với PowerShell và Bash.
-- Sử dụng các công cụ: TeamViewer, AnyDesk, CMD, RDP, v.v.
-
----
-
-## 📁 Nội dung repo
-
-| Thư mục | Mô tả |
-|--------|-------|
-| `scripts/` | Các script PowerShell, Bash để tự động hóa công việc |
-| `knowledge-base/` | Tài liệu hướng dẫn xử lý sự cố thường gặp |
-| `troubleshooting-cases/` | Các tình huống thực tế mình từng xử lý |
-| `tools-used.md` | Tổng hợp các công cụ/phần mềm mình đã sử dụng |
-
----
+## Roadmap
+- Ticket/Incident + SLA
+- PostgreSQL persistence
+- SSO + RBAC
+- Audit log
+- AI Helpdesk có trích nguồn KB
+- Ticket -> Knowledge Base
