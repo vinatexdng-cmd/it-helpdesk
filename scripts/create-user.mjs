@@ -1,0 +1,18 @@
+import { createInterface } from "node:readline/promises";
+import { stdin as input, stdout as output } from "node:process";
+import { randomBytes, scrypt } from "node:crypto";
+import pg from "pg";
+const { Pool } = pg;
+const rl=createInterface({input,output});
+const email=(process.argv[2]||await rl.question("Email: ")).trim().toLowerCase();
+const name=(process.argv[3]||await rl.question("Họ tên: ")).trim();
+const role=(process.argv[4]||await rl.question("Role (user|it|admin): ")).trim();
+const password=await rl.question("Mật khẩu: ");
+rl.close();
+if(!email||!name||!["user","it","admin"].includes(role)||password.length<8) throw new Error("Thông tin không hợp lệ; mật khẩu tối thiểu 8 ký tự.");
+const salt=randomBytes(16);
+const hash=await new Promise((resolve,reject)=>scrypt(password,salt,64,(e,d)=>e?reject(e):resolve(d)));
+const pool=new Pool({connectionString:process.env.DATABASE_URL,ssl:process.env.NODE_ENV==="production"?{rejectUnauthorized:false}:undefined});
+await pool.query("INSERT INTO users(email,name,role,password_hash) VALUES($1,$2,$3,$4) ON CONFLICT(email) DO UPDATE SET name=EXCLUDED.name,role=EXCLUDED.role,password_hash=EXCLUDED.password_hash,active=true,updated_at=NOW()",[email,name,role,salt.toString("hex")+":"+hash.toString("hex")]);
+await pool.end();
+console.log("Đã tạo/cập nhật user:",email,role);
