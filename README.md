@@ -1,33 +1,74 @@
-# IT-Helpdesk
-Tổng hợp script, tài liệu kỹ thuật và case xử lý lỗi của IT Helpdesk.
-# 💼 IT Support
+# Vinatex IT Helpdesk WebApp
 
-Xin chào! Mình là **[Nguyễn Bảo]**, hiện đang theo đuổi lĩnh vực **IT Helpdesk / Technical Support**. Đây là nơi mình lưu trữ và chia sẻ:
+Webapp Next.js dành cho IT Helpdesk, có Knowledge Base, Ticket/Incident, SLA, Audit Log và AI Copilot.
 
-- Các script tự động hóa nhỏ cho công việc Helpdesk.
-- Tài liệu hướng dẫn xử lý sự cố thực tế.
-- Các tình huống mình từng gặp và cách xử lý.
-- Tổng hợp công cụ và phần mềm mình từng sử dụng.
+## Chạy local
+```bash
+pnpm install
+pnpm dev
+```
 
----
+## PostgreSQL
+Thiết lập `DATABASE_URL`, sau đó chạy:
+```bash
+psql "$DATABASE_URL" -f db/schema.sql
+```
+Schema chỉ dùng PostgreSQL/pgcrypto, không yêu cầu `pg_search`.
 
-## 🛠 Kỹ năng nổi bật
+## Authentication & RBAC
+Session dùng cookie HTTP-only, ký HMAC-SHA256 và có thời hạn 8 giờ.
 
-- Quản lý hệ thống mạng nội bộ, chia sẻ máy in, map ổ đĩa.
-- Làm việc với Windows, Active Directory, và cơ bản về Linux.
-- Tạo user, phân quyền, reset password, remote desktop.
-- Viết script đơn giản với PowerShell và Bash.
-- Sử dụng các công cụ: TeamViewer, AnyDesk, CMD, RDP, v.v.
+- `user`: tạo, xem và comment ticket của chính mình.
+- `it`: xem và xử lý toàn bộ ticket.
+- `admin`: toàn quyền nghiệp vụ hiện tại.
 
----
+Bắt buộc cấu hình `AUTH_SECRET` dài tối thiểu 32 ký tự trên Vercel.
 
-## 📁 Nội dung repo
+Để tạo tài khoản ban đầu, tạo password hash bằng Node.js rồi INSERT vào bảng `users`. Không commit password/hash vào Git:
+```js
+const { randomBytes, scryptSync } = require("node:crypto");
+const password = "THAY_MAT_KHAU";
+const salt = randomBytes(16);
+const hash = scryptSync(password, salt, 64);
+console.log(salt.toString("hex") + ":" + hash.toString("hex"));
+```
 
-| Thư mục | Mô tả |
-|--------|-------|
-| `scripts/` | Các script PowerShell, Bash để tự động hóa công việc |
-| `knowledge-base/` | Tài liệu hướng dẫn xử lý sự cố thường gặp |
-| `troubleshooting-cases/` | Các tình huống thực tế mình từng xử lý |
-| `tools-used.md` | Tổng hợp các công cụ/phần mềm mình đã sử dụng |
+Sau khi có hash:
+```sql
+INSERT INTO users(email,name,password_hash,role)
+VALUES ('it-admin@vinatex.local','IT Admin','SALT:HASH','admin');
+```
 
----
+## SLA
+Bảng `sla_policies` được tạo cùng schema với mặc định:
+- Critical: 60 phút
+- High: 240 phút
+- Normal: 480 phút
+- Low: 1440 phút
+
+Đây là giá trị mặc định vận hành; có thể điều chỉnh:
+```sql
+UPDATE sla_policies SET target_minutes=120 WHERE priority='Critical';
+```
+Ticket mới tự tính `sla_due_at` theo priority nếu không truyền thời hạn riêng.
+
+## Deploy Vercel
+Thiết lập:
+- `DATABASE_URL`
+- `AUTH_SECRET`
+- `GITHUB_REPOSITORY`
+- `GITHUB_BRANCH`
+- `GITHUB_TOKEN` nếu repository private
+- `AI_API_KEY`, `AI_BASE_URL`, `AI_MODEL` nếu dùng AI Copilot.
+
+Không đưa password hoặc API key vào client-side environment.
+
+## Tính năng hiện có
+- Dashboard thống kê ticket theo quyền.
+- Ticket/Incident CRUD cơ bản.
+- Ticket number atomic theo năm.
+- SLA tự tính theo priority.
+- Audit log khi tạo/cập nhật/comment.
+- Authentication + RBAC.
+- Knowledge Base từ GitHub.
+- AI Helpdesk Copilot có trích nguồn KB.
