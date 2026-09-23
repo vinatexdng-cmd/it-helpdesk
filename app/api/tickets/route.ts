@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       const no = "HD-" + year + "-" + String(counter.rows[0].last_number).padStart(6, "0");
       const email = u.role === "user" ? u.email : (b.requester_email || u.email);
       const name = u.role === "user" ? u.name : (b.requester_name || u.name);
-      const r = await client.query("INSERT INTO tickets(ticket_no,title,description,requester_name,requester_email,unit,asset,category,priority,status,assignee,sla_due_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'Open',$10,$11,$12) RETURNING *", [no,title,b.description||null,name,email,b.unit||null,b.asset||null,category,priority,b.assignee||null,slaDue]);
+      const r = await client.query("INSERT INTO tickets(ticket_no,title,description,requester_name,requester_email,unit,asset,category,priority,status,assignee,sla_due_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'Open',$10,$11) RETURNING *", [no,title,b.description||null,name,email,b.unit||null,b.asset||null,category,priority,b.assignee||null,slaDue]);
       await client.query("INSERT INTO audit_logs(ticket_id,actor,action,details) VALUES($1,$2,$3,$4)", [r.rows[0].id,u.email,"Ticket created",JSON.stringify({role:u.role,sla_due_at:slaDue.toISOString()})]);
       await client.query("COMMIT");
       return NextResponse.json({ ticket: r.rows[0] }, { status: 201 });
