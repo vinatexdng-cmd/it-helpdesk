@@ -9,7 +9,7 @@ function highlight(text: string, query: string) {
   const words = query.split(/\s+/).filter(Boolean).map(w => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
   if (!words.length) return text;
   const re = new RegExp("(" + words.join("|") + ")", "gi");
-  return text.split(re).map((part, i) => <span key={i}>{part}</span>);
+  return text.split(re).map((part, i) => re.test(part) ? <mark key={i}>{part}</mark> : <span key={i}>{part}</span>);
 }
 
 export default function KnowledgeSearch() {
