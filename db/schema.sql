@@ -43,4 +43,4 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_audit_logs_ticket ON audit_logs(ticket_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_ticket ON audit_logs(ticket_id, created_at);\nCREATE TABLE IF NOT EXISTS ticket_counters (year INTEGER PRIMARY KEY, last_number INTEGER NOT NULL);\n
