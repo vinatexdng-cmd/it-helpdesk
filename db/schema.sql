@@ -1,5 +1,18 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email VARCHAR(255) UNIQUE NOT NULL,
+  name VARCHAR(150) NOT NULL,
+  password_hash TEXT NOT NULL,
+  role VARCHAR(20) NOT NULL DEFAULT 'user' CHECK (role IN ('user','it','admin')),
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
+CREATE INDEX IF NOT EXISTS idx_users_active ON users(active);
+
 CREATE TABLE IF NOT EXISTS tickets (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   ticket_no VARCHAR(30) UNIQUE NOT NULL,
@@ -18,7 +31,6 @@ CREATE TABLE IF NOT EXISTS tickets (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_tickets_status ON tickets(status);
 CREATE INDEX IF NOT EXISTS idx_tickets_unit ON tickets(unit);
 CREATE INDEX IF NOT EXISTS idx_tickets_priority ON tickets(priority);
@@ -31,7 +43,6 @@ CREATE TABLE IF NOT EXISTS ticket_comments (
   body TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_ticket_comments_ticket ON ticket_comments(ticket_id, created_at);
 
 CREATE TABLE IF NOT EXISTS audit_logs (
@@ -42,5 +53,9 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   details JSONB,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+CREATE INDEX IF NOT EXISTS idx_audit_logs_ticket ON audit_logs(ticket_id, created_at);
 
-CREATE INDEX IF NOT EXISTS idx_audit_logs_ticket ON audit_logs(ticket_id, created_at);\nCREATE TABLE IF NOT EXISTS ticket_counters (year INTEGER PRIMARY KEY, last_number INTEGER NOT NULL);\n
+CREATE TABLE IF NOT EXISTS ticket_counters (
+  year INTEGER PRIMARY KEY,
+  last_number INTEGER NOT NULL
+);
