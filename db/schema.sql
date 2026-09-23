@@ -35,6 +35,7 @@ CREATE INDEX IF NOT EXISTS idx_tickets_status ON tickets(status);
 CREATE INDEX IF NOT EXISTS idx_tickets_unit ON tickets(unit);
 CREATE INDEX IF NOT EXISTS idx_tickets_priority ON tickets(priority);
 CREATE INDEX IF NOT EXISTS idx_tickets_created_at ON tickets(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_tickets_requester_email ON tickets(requester_email);
 
 CREATE TABLE IF NOT EXISTS ticket_comments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -59,3 +60,14 @@ CREATE TABLE IF NOT EXISTS ticket_counters (
   year INTEGER PRIMARY KEY,
   last_number INTEGER NOT NULL
 );
+
+-- Default SLA policy in minutes: Critical 1h, High 4h, Normal 8h, Low 24h.
+CREATE TABLE IF NOT EXISTS sla_policies (
+  priority VARCHAR(20) PRIMARY KEY,
+  target_minutes INTEGER NOT NULL CHECK (target_minutes > 0),
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+INSERT INTO sla_policies(priority,target_minutes) VALUES
+  ('Critical',60),('High',240),('Normal',480),('Low',1440)
+ON CONFLICT(priority) DO NOTHING;
