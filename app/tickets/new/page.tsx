@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-const UNITS = ["VP Tổng Công ty","Vinatex Đà Nẵng","Nhà máy May Duy Trinh","Nhà máy May Hòa Thọ","Nhà máy May Phù Mỹ","Nhà máy May Nghĩa Hành","Văn phòng/Đơn vị khác"];
+const UNITS = ["VPCTY","Nhà máy May Phù Mỹ","Nhà máy May Nghĩa Hành","Nhà máy May An Đồn","Nhà máy May Dung Quất"];
 const ASSETS = ["Desktop PC","Laptop","Máy in","Máy scan","Màn hình","Switch/Network","Wi-Fi Access Point","Camera/NVR","Server","Điện thoại/IP Phone","Thiết bị khác"];
 
 export default function NewTicket(){
