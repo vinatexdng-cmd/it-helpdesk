@@ -40,7 +40,7 @@ export async function POST(req:NextRequest){
     const docs=await listHelpdeskDocuments();
     const matches=relevantContext(question,docs,user.role);
     const context=matches.map((d,i)=>`SOURCE ${i+1}\nTitle: ${d.title}\nPath: ${d.path}\nType: ${d.type}\nContent:\n${d.content}`).join("\n\n---\n\n");
-    const conversation=history.map(x=>`${x.role==="user"?"NHÂN VIÊN":"COPILOT"}: ${x.content.slice(0,3000)}`).join("\n");
+    const conversation=history.map((x: Turn)=>`${x.role==="user"?"NHÂN VIÊN":"COPILOT"}: ${x.content.slice(0,3000)}`).join("\n");
     const prompt=`Bạn là Vinatex IT Helpdesk Copilot, một trợ lý IT nội bộ có nhiệm vụ hướng dẫn xử lý sự cố dựa trên Knowledge Base.
 Nguyên tắc:
 - Chỉ dùng thông tin có trong SOURCE; không bịa thao tác, chính sách, đường dẫn hoặc thông số.
