@@ -1,3 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { listHelpdeskDocuments, loadMarkdown } from "@/lib/github";
-export async function GET(req:NextRequest){ const q=(req.nextUrl.searchParams.get("q")||"").trim().toLowerCase(); if(!q) return NextResponse.json({documents:[]}); try { const all=await listHelpdeskDocuments(); const docs=[] as typeof all; for(const d of all){ let content=""; try{content=await loadMarkdown(d.path)}catch{} const hay=(d.title+" "+d.path+" "+content).toLowerCase(); if(hay.includes(q)) docs.push({...d,content:content.slice(0,500)}); } return NextResponse.json({documents:docs,count:docs.length}); } catch(e){ return NextResponse.json({error:e instanceof Error?e.message:"Unknown error"},{status:500}); } }
+import { listHelpdeskDocuments } from "@/lib/github";
+export const revalidate=60;
+export async function GET(req:NextRequest){
+ const q=(req.nextUrl.searchParams.get("q")||"").trim().toLowerCase();
+ const docs=await listHelpdeskDocuments();
+ if(!q)return NextResponse.json({documents:docs.slice(0,50),count:docs.length});
+ const words=q.split(/\s+/).filter(Boolean);
+ const documents=docs.filter(d=>{const hay=(d.title+" "+d.path+" "+(d.content||"")).toLowerCase();return words.every(w=>hay.includes(w))}).slice(0,50);
+ return NextResponse.json({documents,count:documents.length});
+}
