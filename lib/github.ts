@@ -37,11 +37,14 @@ export async function listHelpdeskDocuments(){
       if(item.type==="dir") {
         await walk(item.path);
       } else if(/\.(md|markdown|txt|ps1|psm1|bat|cmd|sh)$/i.test(item.name)) {
+        let content="";
+        try { content=await loadMarkdown(item.path); } catch {}
         out.push({
           title:item.name.replace(/\.[^.]+$/,""),
           path:item.path,
           type:classify(item.path),
           url:item.html_url,
+          content,
         });
       }
     }
