@@ -5,6 +5,7 @@ import "./new-ticket-ui.css";
 import "./dashboard-ui.css";
 import "./readability-ui.css";
 import "./compact-home.css";
+import "./typography-system.css";
 import AppNav from "./AppNav";
 import SiteFooter from "./SiteFooter";
 
