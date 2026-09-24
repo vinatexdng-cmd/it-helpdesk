@@ -38,9 +38,8 @@ export default function Home(){
   return <main className="portal-container">
     <section className="portal-hero">
       <div className="portal-hero-content">
-        <div className="vinatex-logo" aria-label="VINATEX">
-          <div className="vinatex-logo-mark"><span>VT</span></div>
-          <div className="vinatex-logo-word">VINATEX</div>
+        <div className="vinatex-logo" aria-label="Vinatex Đà Nẵng">
+          <img src="/brand/vinatex-da-nang.svg" alt="Vinatex Đà Nẵng" />
         </div>
         <div className="portal-kicker">CÔNG TY CỔ PHẦN VINATEX ĐÀ NẴNG</div>
         <h1>CỔNG THÔNG TIN HỖ TRỢ CNTT</h1>
@@ -112,7 +111,10 @@ export default function Home(){
     </section>
 
     <footer className="portal-footer">
-      <div><strong>HỆ THỐNG HỖ TRỢ CNTT VINATEX ĐÀ NẴNG</strong><span>Cổng hỗ trợ nội bộ • VPCTY và các đơn vị, nhà máy</span></div>
+      <div className="portal-footer-brand">
+        <img src="/brand/vinatex-da-nang.svg" alt="Vinatex Đà Nẵng" />
+        <div><strong>HỆ THỐNG HỖ TRỢ CNTT VINATEX ĐÀ NẴNG</strong><span>Cổng hỗ trợ nội bộ • VPCTY và các đơn vị, nhà máy</span></div>
+      </div>
       <Link href="/knowledge-base">Kho kiến thức CNTT →</Link>
     </footer>
   </main>;
