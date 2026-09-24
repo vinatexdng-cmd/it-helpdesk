@@ -1,12 +1,8 @@
 "use client";
 import { useState } from "react";
-
+type Source={path:string;url:string;title:string};
 export default function AICopilot({ticketNo,onResolution}:{ticketNo:string;onResolution:(v:string)=>void}){
- const [answer,setAnswer]=useState(""),[sources,setSources]=useState<any[]>([]),[loading,setLoading]=useState(false),[error,setError]=useState("");
- async function run(){
-  setLoading(true);setError("");
-  try{const r=await fetch("/api/tickets/"+encodeURIComponent(ticketNo)+"/ai",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ticketNo})});const j=await r.json();if(!r.ok)throw new Error(j.error||"AI error");setAnswer(j.answer||"");setSources(j.sources||[])}
-  catch(e){setError(e instanceof Error?e.message:"AI error")}finally{setLoading(false)}
- }
- return <section className="panel ai-copilot"><h2>🤖 AI Copilot</h2><p>Phân tích Ticket, tìm KB liên quan và đề xuất hướng xử lý.</p><div className="ai-actions"><button type="button" onClick={run} disabled={loading}>{loading?"Đang phân tích...":"Phân tích Ticket"}</button>{answer&&<><button type="button" onClick={()=>onResolution(answer)}>Dùng kết quả làm Resolution</button><button type="button" onClick={()=>navigator.clipboard?.writeText(answer)}>Sao chép</button></>}</div>{error&&<div className="notice">{error}</div>}{answer&&<div className="ai-answer">{answer}</div>}{sources.length>0&&<div className="ai-sources"><strong>Knowledge Base liên quan</strong>{sources.map(s=><a key={s.path} href={s.url} target="_blank" rel="noreferrer">{s.title} — {s.path}</a>)}</div>}</section>
+ const [answer,setAnswer]=useState(""),[sources,setSources]=useState<Source[]>([]),[loading,setLoading]=useState(false),[error,setError]=useState("");
+ async function run(){setLoading(true);setError("");try{const r=await fetch("/api/tickets/"+encodeURIComponent(ticketNo)+"/ai",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ticketNo})});const j=await r.json();if(!r.ok)throw new Error(j.error||"Không thể phân tích yêu cầu");setAnswer(j.answer||"");setSources(j.sources||[])}catch(e){setError(e instanceof Error?e.message:"Không thể phân tích yêu cầu")}finally{setLoading(false)}}
+ return <section className="panel ai-copilot ticket-ai"><div className="ai-heading"><span className="ai-symbol">AI</span><div><h2>Trợ lý xử lý sự cố</h2><p>Phân tích yêu cầu, đối chiếu Kho kiến thức và đề xuất hướng xử lý.</p></div></div><div className="ai-actions"><button type="button" onClick={run} disabled={loading}>{loading?"Đang phân tích...":"Phân tích bằng AI"}</button>{answer&&<><button className="secondary-action" type="button" onClick={()=>onResolution(answer)}>Đưa vào kết quả xử lý</button><button className="secondary-action" type="button" onClick={()=>navigator.clipboard?.writeText(answer)}>Sao chép</button></>}</div>{error&&<div className="notice">{error}</div>}{answer&&<div className="ai-answer"><span className="answer-label">Đề xuất của trợ lý</span>{answer}</div>}{sources.length>0&&<div className="ai-sources"><strong>Nguồn trong Kho kiến thức</strong>{sources.map(s=><a key={s.path} href={s.url} target="_blank" rel="noreferrer"><span>{s.title}</span><small>{s.path}</small></a>)}</div>}</section>;
 }
