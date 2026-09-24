@@ -38,7 +38,9 @@ export default function AppNav(){
    <div className="nav-top">
      <div className="nav-inner">
        <a className="brand" href="/" aria-label="Trang chủ Vinatex Đà Nẵng">
-         <span className="brand-mark"><span>VT</span></span>
+         <span className="brand-logo-wrap">
+           <img className="brand-logo" src="/brand/vinatex-da-nang.svg" alt="Vinatex Đà Nẵng"/>
+         </span>
          <span className="brand-copy">
            <strong>VINATEX</strong>
            <small>ĐÀ NẴNG</small>
