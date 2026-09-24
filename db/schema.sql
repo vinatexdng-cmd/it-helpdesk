@@ -61,7 +61,6 @@ CREATE TABLE IF NOT EXISTS ticket_counters (
   last_number INTEGER NOT NULL
 );
 
--- Default SLA policy in minutes: Critical 1h, High 4h, Normal 8h, Low 24h.
 CREATE TABLE IF NOT EXISTS sla_policies (
   priority VARCHAR(20) PRIMARY KEY,
   target_minutes INTEGER NOT NULL CHECK (target_minutes > 0),
@@ -71,3 +70,32 @@ CREATE TABLE IF NOT EXISTS sla_policies (
 INSERT INTO sla_policies(priority,target_minutes) VALUES
   ('Critical',60),('High',240),('Normal',480),('Low',1440)
 ON CONFLICT(priority) DO NOTHING;
+
+-- OpenAI can draft reusable cases from successfully closed tickets.
+-- Drafts never become Knowledge Base content until an IT/Admin reviewer approves them.
+CREATE TABLE IF NOT EXISTS knowledge_case_proposals (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ticket_id UUID NOT NULL REFERENCES tickets(id) ON DELETE CASCADE,
+  ticket_no VARCHAR(30) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  category VARCHAR(80) NOT NULL DEFAULT 'Other',
+  symptoms TEXT,
+  root_cause TEXT,
+  diagnosis TEXT,
+  resolution TEXT NOT NULL,
+  verification TEXT,
+  escalation TEXT,
+  keywords TEXT,
+  markdown TEXT NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending','Approved','Rejected','Published')),
+  generated_by VARCHAR(150),
+  reviewed_by VARCHAR(150),
+  review_note TEXT,
+  published_path TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  reviewed_at TIMESTAMPTZ,
+  published_at TIMESTAMPTZ,
+  UNIQUE(ticket_id)
+);
+CREATE INDEX IF NOT EXISTS idx_case_proposals_status ON knowledge_case_proposals(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_case_proposals_ticket_no ON knowledge_case_proposals(ticket_no);
