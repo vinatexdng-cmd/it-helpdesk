@@ -23,20 +23,14 @@ export default function Login(){
    <main className="login-page">
      <section className="login-card">
        <div className="login-brand">
-         <img src="/brand/vinatex-da-nang.svg" alt="Vinatex Đà Nẵng"/>
+         <img src="/brand/vinatex-da-nang.png" alt="Vinatex Đà Nẵng"/>
        </div>
        <span className="eyebrow">Hệ thống hỗ trợ CNTT</span>
        <h1>Đăng nhập</h1>
        <p className="login-subtitle">Sử dụng tài khoản IT Helpdesk được cấp.</p>
        <form className="form" onSubmit={submit}>
-         <label>
-           Email
-           <input required type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="ten@vinatexdn.com.vn"/>
-         </label>
-         <label>
-           Mật khẩu
-           <input required type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Nhập mật khẩu"/>
-         </label>
+         <label>Email<input required type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="ten@vinatexdn.com.vn"/></label>
+         <label>Mật khẩu<input required type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Nhập mật khẩu"/></label>
          <button type="submit">Đăng nhập</button>
          {error&&<div className="notice">{error}</div>}
        </form>
