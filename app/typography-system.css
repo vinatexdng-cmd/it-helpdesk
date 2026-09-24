@@ -1,0 +1,50 @@
+/* Unified typography system — Vinatex IT Helpdesk */
+:root{
+  --font-ui:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --fs-xs:12px;
+  --fs-sm:13px;
+  --fs-body:14px;
+  --fs-md:16px;
+  --fs-h3:18px;
+  --fs-h2:22px;
+  --fs-h1:32px;
+  --fs-metric:28px;
+  --lh-tight:1.25;
+  --lh-ui:1.45;
+  --lh-body:1.65;
+}
+html,body{font-family:var(--font-ui)!important;font-size:var(--fs-body)!important;line-height:var(--lh-body)!important;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body,button,input,textarea,select{font-family:var(--font-ui)!important}
+main.container{font-size:var(--fs-body)!important}
+main.container h1{font-size:var(--fs-h1)!important;line-height:var(--lh-tight)!important;font-weight:800!important;letter-spacing:-.025em!important}
+main.container h2{font-size:var(--fs-h2)!important;line-height:1.3!important;font-weight:800!important;letter-spacing:-.015em!important}
+main.container h3{font-size:var(--fs-h3)!important;line-height:1.4!important;font-weight:750!important}
+main.container p,main.container li,main.container dd,main.container td{font-size:var(--fs-body)!important;line-height:var(--lh-body)!important}
+main.container small,.muted{font-size:var(--fs-xs)!important;line-height:1.5!important}
+main.container label{font-size:var(--fs-sm)!important;line-height:var(--lh-ui)!important;font-weight:700!important}
+main.container input,main.container textarea,main.container select{font-size:var(--fs-body)!important;line-height:1.5!important}
+main.container button,.button{font-size:var(--fs-sm)!important;line-height:1.25!important;font-weight:750!important}
+/* Header/navigation */
+.app-nav nav a{font-size:var(--fs-sm)!important;line-height:1.35!important}.nav-user{font-size:var(--fs-xs)!important;line-height:1.35!important}.nav-user button{font-size:var(--fs-xs)!important}.brand{line-height:1.2!important}
+/* Page headers */
+.hero .eyebrow,.page-heading-row .eyebrow{font-size:11px!important;line-height:1.2!important;font-weight:800!important;letter-spacing:.09em!important}
+.hero h1,.page-heading-row h1{font-size:var(--fs-h1)!important;line-height:var(--lh-tight)!important}
+.hero p,.page-heading-row p{font-size:var(--fs-body)!important;line-height:1.6!important}
+/* Cards and statistics */
+.stats-grid .stat-card span,.metric-card span,.users-stats .stat-card span{font-size:var(--fs-sm)!important;line-height:1.35!important;font-weight:750!important}
+.stats-grid .stat-card strong,.metric-card strong,.users-stats .stat-card strong{font-size:var(--fs-metric)!important;line-height:1!important;font-weight:800!important}
+.stats-grid .stat-card small,.metric-card small,.users-stats .stat-card small{font-size:var(--fs-xs)!important;line-height:1.45!important}
+.card h2,.panel-title-row h2,.section-heading h2{font-size:var(--fs-h2)!important;line-height:1.3!important}.card p,.panel-title-row p{font-size:var(--fs-body)!important;line-height:1.6!important}
+/* Tables and filters */
+th,.modern-table th{font-size:var(--fs-xs)!important;line-height:1.4!important;font-weight:800!important}td,.modern-table td{font-size:var(--fs-sm)!important;line-height:1.55!important}.search,.ticket-filters select,.toolbar select{font-size:var(--fs-body)!important}.badge,.sla-badge,.kb-filter{font-size:var(--fs-xs)!important;line-height:1.3!important}
+/* Dashboard charts */
+.chart-panel-head>div>span{font-size:11px!important}.chart-panel-head h3{font-size:var(--fs-h3)!important}.chart-panel-head p{font-size:var(--fs-xs)!important}.modern-bar-list .bar-label{font-size:var(--fs-sm)!important}.modern-bar-list .bar-label b{font-size:var(--fs-xs)!important}
+/* Knowledge base */
+.kb-result-body h3{font-size:var(--fs-md)!important}.kb-result-body p{font-size:var(--fs-body)!important}.kb-path{font-size:var(--fs-xs)!important}.kb-open{font-size:var(--fs-sm)!important}.kb-toc,.kb-toc a,.kb-toc span{font-size:var(--fs-sm)!important}.kb-doc-meta span{font-size:var(--fs-xs)!important}.kb-doc-meta b{font-size:var(--fs-body)!important}.kb-doc-ai p,.kb-doc-ai textarea,.kb-doc-answer{font-size:15px!important}
+/* Long-form document is intentionally one step larger for comfortable reading */
+.kb-document.modern-document p,.kb-document.modern-document li,.kb-document.modern-document blockquote{font-size:16px!important;line-height:1.8!important}.kb-document.modern-document h1{font-size:30px!important}.kb-document.modern-document h2{font-size:24px!important}.kb-document.modern-document h3{font-size:19px!important}
+/* Forms/admin */
+.form label{font-size:var(--fs-sm)!important}.form input,.form textarea,.form select{font-size:var(--fs-body)!important}.branding-note,.history-head p,.history-count{font-size:var(--fs-xs)!important}
+/* Footer */
+.site-footer strong{font-size:var(--fs-body)!important}.site-footer p,.site-footer-meta{font-size:var(--fs-xs)!important}
+@media(max-width:700px){:root{--fs-h1:28px;--fs-h2:21px;--fs-h3:17px;--fs-metric:26px}.kb-document.modern-document p,.kb-document.modern-document li,.kb-document.modern-document blockquote{font-size:15px!important}}
