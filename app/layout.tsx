@@ -1,5 +1,6 @@
 import "./globals.css";
 import "./modern-ui.css";
+import "./document-reader.css";
 import AppNav from "./AppNav";
 
 export const metadata={
