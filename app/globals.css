@@ -106,3 +106,34 @@
  .logout-button{padding:7px 9px!important}
  .nav-home-action{display:none}
 }
+
+
+/* Official Vinatex Da Nang logo */
+.brand-logo-wrap{display:flex;align-items:center;justify-content:center;width:58px;height:50px;padding:4px 7px;border-radius:7px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.12);flex:0 0 auto}
+.brand-logo{display:block;width:44px;height:46px;object-fit:contain}
+.vinatex-logo{display:inline-flex;align-items:center;justify-content:center;width:108px;height:82px;padding:6px;border-radius:10px;background:#fff;box-shadow:0 10px 28px rgba(0,28,58,.2);margin-bottom:20px}
+.vinatex-logo img{display:block;width:94px;height:70px;object-fit:contain}
+.portal-footer-brand{display:flex;align-items:center;gap:12px}
+.portal-footer-brand img{display:block;width:48px;height:48px;padding:3px;border-radius:6px;background:#fff;object-fit:contain}
+.portal-footer-brand>div{min-width:0}
+.login-page{min-height:calc(100vh - 0px);display:flex;align-items:center;justify-content:center;padding:40px 20px;background:radial-gradient(circle at 20% 10%,rgba(255,255,255,.12),transparent 35%),linear-gradient(135deg,#002b55 0%,#005baa 62%,#087ac9 100%)}
+.login-card{width:min(100%,480px);padding:34px;border-radius:20px;background:rgba(255,255,255,.98);color:#172033;border:1px solid rgba(255,255,255,.6);box-shadow:0 24px 70px rgba(0,27,57,.3)}
+.login-brand{display:flex;justify-content:center;margin-bottom:18px}
+.login-brand img{display:block;width:112px;height:112px;object-fit:contain}
+.login-card .eyebrow{display:block;width:max-content;margin:0 auto 10px;background:#eaf4ff;color:#005baa;border-color:#cfe3f5;text-transform:none;letter-spacing:.02em}
+.login-card h1{margin:0;text-align:center;color:#003b73;font-size:30px}
+.login-subtitle{margin:8px 0 24px;text-align:center;color:#637b91;font-size:13px}
+.login-card .form{max-width:none}
+.login-card .form button{width:100%;margin-top:2px}
+.login-footer{display:block;margin-top:20px;text-align:center;color:#8295a8;font-size:9px;letter-spacing:.08em}
+@media(max-width:520px){
+ .brand-logo-wrap{width:48px;height:43px;padding:3px 5px}
+ .brand-logo{width:38px;height:39px}
+ .brand-copy{display:none}
+ .vinatex-logo{width:94px;height:72px}
+ .vinatex-logo img{width:82px;height:61px}
+ .portal-footer-brand{align-items:flex-start}
+ .portal-footer-brand img{width:42px;height:42px}
+ .login-card{padding:26px 20px}
+ .login-brand img{width:96px;height:96px}
+}
