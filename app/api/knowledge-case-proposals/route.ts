@@ -1,0 +1,10 @@
+import { NextRequest,NextResponse } from "next/server";
+import { getSession } from "@/lib/session";
+import { getPool } from "@/lib/db";
+
+export async function GET(){
+ try{const u=await getSession();if(!u||!["it","admin"].includes(u.role))return NextResponse.json({error:"Không có quyền"},{status:403});const p=getPool();const r=await p.query("SELECT * FROM knowledge_case_proposals ORDER BY CASE status WHEN 'Pending' THEN 0 WHEN 'Approved' THEN 1 WHEN 'Rejected' THEN 2 ELSE 3 END, created_at DESC LIMIT 200");return NextResponse.json({proposals:r.rows})}catch(e){return NextResponse.json({error:e instanceof Error?e.message:"Không thể tải Case đề xuất"},{status:500})}
+}
+export async function PUT(req:NextRequest){
+ try{const u=await getSession();if(!u||!["it","admin"].includes(u.role))return NextResponse.json({error:"Không có quyền"},{status:403});const b=await req.json();if(!b.id)return NextResponse.json({error:"Thiếu ID"},{status:400});const status=String(b.status||"Pending");if(!["Pending","Approved","Rejected"].includes(status))return NextResponse.json({error:"Trạng thái không hợp lệ"},{status:400});const p=getPool();const r=await p.query(`UPDATE knowledge_case_proposals SET title=$2,category=$3,symptoms=$4,root_cause=$5,diagnosis=$6,resolution=$7,verification=$8,escalation=$9,keywords=$10,markdown=$11,status=$12,reviewed_by=$13,review_note=$14,reviewed_at=CASE WHEN $12 IN ('Approved','Rejected') THEN NOW() ELSE NULL END WHERE id=$1 RETURNING *`,[b.id,String(b.title||"").slice(0,255),b.category||"Other",b.symptoms||"",b.root_cause||"",b.diagnosis||"",b.resolution||"",b.verification||"",b.escalation||"",b.keywords||"",b.markdown||"",status,u.email,b.review_note||""]);if(!r.rowCount)return NextResponse.json({error:"Không tìm thấy Case"},{status:404});return NextResponse.json({proposal:r.rows[0]})}catch(e){return NextResponse.json({error:e instanceof Error?e.message:"Không thể cập nhật Case"},{status:500})}
+}
