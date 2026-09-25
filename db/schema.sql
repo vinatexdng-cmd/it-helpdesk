@@ -13,6 +13,17 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 CREATE INDEX IF NOT EXISTS idx_users_active ON users(active);
 
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token_hash VARCHAR(64) UNIQUE NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  used_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_user ON password_reset_tokens(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_hash ON password_reset_tokens(token_hash);
+
 CREATE TABLE IF NOT EXISTS tickets (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   ticket_no VARCHAR(30) UNIQUE NOT NULL,
@@ -56,62 +67,18 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 );
 CREATE INDEX IF NOT EXISTS idx_audit_logs_ticket ON audit_logs(ticket_id, created_at);
 
-CREATE TABLE IF NOT EXISTS ticket_counters (
-  year INTEGER PRIMARY KEY,
-  last_number INTEGER NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS sla_policies (
-  priority VARCHAR(20) PRIMARY KEY,
-  target_minutes INTEGER NOT NULL CHECK (target_minutes > 0),
-  active BOOLEAN NOT NULL DEFAULT TRUE,
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-INSERT INTO sla_policies(priority,target_minutes) VALUES
-  ('Critical',60),('High',240),('Normal',480),('Low',1440)
-ON CONFLICT(priority) DO NOTHING;
+CREATE TABLE IF NOT EXISTS ticket_counters (year INTEGER PRIMARY KEY,last_number INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS sla_policies (priority VARCHAR(20) PRIMARY KEY,target_minutes INTEGER NOT NULL CHECK (target_minutes > 0),active BOOLEAN NOT NULL DEFAULT TRUE,updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+INSERT INTO sla_policies(priority,target_minutes) VALUES ('Critical',60),('High',240),('Normal',480),('Low',1440) ON CONFLICT(priority) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS knowledge_case_proposals (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  ticket_id UUID NOT NULL REFERENCES tickets(id) ON DELETE CASCADE,
-  ticket_no VARCHAR(30) NOT NULL,
-  title VARCHAR(255) NOT NULL,
-  category VARCHAR(80) NOT NULL DEFAULT 'Other',
-  symptoms TEXT,
-  root_cause TEXT,
-  diagnosis TEXT,
-  resolution TEXT NOT NULL,
-  verification TEXT,
-  escalation TEXT,
-  keywords TEXT,
-  markdown TEXT NOT NULL,
-  status VARCHAR(20) NOT NULL DEFAULT 'Draft' CHECK (status IN ('Draft','Pending','Approved','Rejected','Published')),
-  generated_by VARCHAR(150),
-  reviewed_by VARCHAR(150),
-  review_note TEXT,
-  published_path TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  reviewed_at TIMESTAMPTZ,
-  published_at TIMESTAMPTZ,
-  UNIQUE(ticket_id)
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),ticket_id UUID NOT NULL REFERENCES tickets(id) ON DELETE CASCADE,ticket_no VARCHAR(30) NOT NULL,title VARCHAR(255) NOT NULL,category VARCHAR(80) NOT NULL DEFAULT 'Other',symptoms TEXT,root_cause TEXT,diagnosis TEXT,resolution TEXT NOT NULL,verification TEXT,escalation TEXT,keywords TEXT,markdown TEXT NOT NULL,status VARCHAR(20) NOT NULL DEFAULT 'Draft' CHECK (status IN ('Draft','Pending','Approved','Rejected','Published')),generated_by VARCHAR(150),reviewed_by VARCHAR(150),review_note TEXT,published_path TEXT,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),reviewed_at TIMESTAMPTZ,published_at TIMESTAMPTZ,UNIQUE(ticket_id)
 );
 CREATE INDEX IF NOT EXISTS idx_case_proposals_status ON knowledge_case_proposals(status, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_case_proposals_ticket_no ON knowledge_case_proposals(ticket_no);
 
--- Internal notifications for ticket and Knowledge Base workflow.
 CREATE TABLE IF NOT EXISTS notifications (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  recipient_email VARCHAR(255) NOT NULL,
-  actor_email VARCHAR(255),
-  type VARCHAR(50) NOT NULL,
-  title VARCHAR(255) NOT NULL,
-  message TEXT NOT NULL,
-  link TEXT,
-  ticket_id UUID REFERENCES tickets(id) ON DELETE CASCADE,
-  proposal_id UUID REFERENCES knowledge_case_proposals(id) ON DELETE CASCADE,
-  is_read BOOLEAN NOT NULL DEFAULT FALSE,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  read_at TIMESTAMPTZ
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),recipient_email VARCHAR(255) NOT NULL,actor_email VARCHAR(255),type VARCHAR(50) NOT NULL,title VARCHAR(255) NOT NULL,message TEXT NOT NULL,link TEXT,ticket_id UUID REFERENCES tickets(id) ON DELETE CASCADE,proposal_id UUID REFERENCES knowledge_case_proposals(id) ON DELETE CASCADE,is_read BOOLEAN NOT NULL DEFAULT FALSE,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),read_at TIMESTAMPTZ
 );
 CREATE INDEX IF NOT EXISTS idx_notifications_recipient ON notifications(recipient_email, is_read, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_notifications_proposal ON notifications(proposal_id, created_at DESC);
