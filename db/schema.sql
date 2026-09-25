@@ -71,8 +71,6 @@ INSERT INTO sla_policies(priority,target_minutes) VALUES
   ('Critical',60),('High',240),('Normal',480),('Low',1440)
 ON CONFLICT(priority) DO NOTHING;
 
--- OpenAI can draft reusable cases from successfully closed tickets.
--- Drafts never become Knowledge Base content until an IT/Admin reviewer approves them.
 CREATE TABLE IF NOT EXISTS knowledge_case_proposals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   ticket_id UUID NOT NULL REFERENCES tickets(id) ON DELETE CASCADE,
@@ -99,3 +97,21 @@ CREATE TABLE IF NOT EXISTS knowledge_case_proposals (
 );
 CREATE INDEX IF NOT EXISTS idx_case_proposals_status ON knowledge_case_proposals(status, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_case_proposals_ticket_no ON knowledge_case_proposals(ticket_no);
+
+-- Internal notifications for ticket and Knowledge Base workflow.
+CREATE TABLE IF NOT EXISTS notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  recipient_email VARCHAR(255) NOT NULL,
+  actor_email VARCHAR(255),
+  type VARCHAR(50) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  link TEXT,
+  ticket_id UUID REFERENCES tickets(id) ON DELETE CASCADE,
+  proposal_id UUID REFERENCES knowledge_case_proposals(id) ON DELETE CASCADE,
+  is_read BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  read_at TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS idx_notifications_recipient ON notifications(recipient_email, is_read, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_proposal ON notifications(proposal_id, created_at DESC);
