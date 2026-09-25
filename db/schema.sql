@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS knowledge_case_proposals (
   escalation TEXT,
   keywords TEXT,
   markdown TEXT NOT NULL,
-  status VARCHAR(20) NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending','Approved','Rejected','Published')),
+  status VARCHAR(20) NOT NULL DEFAULT 'Draft' CHECK (status IN ('Draft','Pending','Approved','Rejected','Published')),
   generated_by VARCHAR(150),
   reviewed_by VARCHAR(150),
   review_note TEXT,
