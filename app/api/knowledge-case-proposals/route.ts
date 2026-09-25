@@ -1,10 +1,142 @@
-import { NextRequest,NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { getPool } from "@/lib/db";
 
-export async function GET(){
- try{const u=await getSession();if(!u||!["it","admin"].includes(u.role))return NextResponse.json({error:"Không có quyền"},{status:403});const p=getPool();const r=await p.query("SELECT * FROM knowledge_case_proposals ORDER BY CASE status WHEN 'Pending' THEN 0 WHEN 'Approved' THEN 1 WHEN 'Rejected' THEN 2 ELSE 3 END, created_at DESC LIMIT 200");return NextResponse.json({proposals:r.rows})}catch(e){return NextResponse.json({error:e instanceof Error?e.message:"Không thể tải Case đề xuất"},{status:500})}
+const REVIEW_STATUSES = ["Pending", "Approved", "Rejected"] as const;
+
+export async function GET() {
+  try {
+    const user = await getSession();
+    if (!user || !["it", "admin"].includes(user.role)) {
+      return NextResponse.json({ error: "Không có quyền" }, { status: 403 });
+    }
+
+    const pool = getPool();
+    const result = await pool.query(
+      `SELECT *
+       FROM knowledge_case_proposals
+       ORDER BY CASE status
+         WHEN 'Pending' THEN 0
+         WHEN 'Approved' THEN 1
+         WHEN 'Rejected' THEN 2
+         ELSE 3
+       END, created_at DESC
+       LIMIT 200`
+    );
+
+    return NextResponse.json({ proposals: result.rows });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Không thể tải Case đề xuất" },
+      { status: 500 }
+    );
+  }
 }
-export async function PUT(req:NextRequest){
- try{const u=await getSession();if(!u||!["it","admin"].includes(u.role))return NextResponse.json({error:"Không có quyền"},{status:403});const b=await req.json();if(!b.id)return NextResponse.json({error:"Thiếu ID"},{status:400});const status=String(b.status||"Pending");if(!["Pending","Approved","Rejected"].includes(status))return NextResponse.json({error:"Trạng thái không hợp lệ"},{status:400});const p=getPool();const r=await p.query(`UPDATE knowledge_case_proposals SET title=$2,category=$3,symptoms=$4,root_cause=$5,diagnosis=$6,resolution=$7,verification=$8,escalation=$9,keywords=$10,markdown=$11,status=$12,reviewed_by=$13,review_note=$14,reviewed_at=CASE WHEN $12 IN ('Approved','Rejected') THEN NOW() ELSE NULL END WHERE id=$1 RETURNING *`,[b.id,String(b.title||"").slice(0,255),b.category||"Other",b.symptoms||"",b.root_cause||"",b.diagnosis||"",b.resolution||"",b.verification||"",b.escalation||"",b.keywords||"",b.markdown||"",status,u.email,b.review_note||""]);if(!r.rowCount)return NextResponse.json({error:"Không tìm thấy Case"},{status:404});return NextResponse.json({proposal:r.rows[0]})}catch(e){return NextResponse.json({error:e instanceof Error?e.message:"Không thể cập nhật Case"},{status:500})}
+
+export async function PUT(req: NextRequest) {
+  try {
+    const user = await getSession();
+    if (!user || !["it", "admin"].includes(user.role)) {
+      return NextResponse.json({ error: "Không có quyền" }, { status: 403 });
+    }
+
+    const body = await req.json();
+    if (!body.id) {
+      return NextResponse.json({ error: "Thiếu ID" }, { status: 400 });
+    }
+
+    const status = String(body.status || "Pending");
+    if (!REVIEW_STATUSES.includes(status as (typeof REVIEW_STATUSES)[number])) {
+      return NextResponse.json({ error: "Trạng thái không hợp lệ" }, { status: 400 });
+    }
+
+    const pool = getPool();
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      const result = await client.query(
+        `UPDATE knowledge_case_proposals
+         SET title = $2,
+             category = $3,
+             symptoms = $4,
+             root_cause = $5,
+             diagnosis = $6,
+             resolution = $7,
+             verification = $8,
+             escalation = $9,
+             keywords = $10,
+             markdown = $11,
+             status = $12::varchar,
+             reviewed_by = $13,
+             review_note = $14,
+             reviewed_at = CASE
+               WHEN $12::varchar = 'Approved' OR $12::varchar = 'Rejected' THEN NOW()
+               ELSE NULL
+             END
+         WHERE id = $1
+           AND status <> 'Published'
+         RETURNING *`,
+        [
+          body.id,
+          String(body.title || "").slice(0, 255),
+          body.category || "Other",
+          body.symptoms || "",
+          body.root_cause || "",
+          body.diagnosis || "",
+          body.resolution || "",
+          body.verification || "",
+          body.escalation || "",
+          body.keywords || "",
+          body.markdown || "",
+          status,
+          user.email,
+          body.review_note || "",
+        ]
+      );
+
+      if (!result.rowCount) {
+        await client.query("ROLLBACK");
+        return NextResponse.json(
+          { error: "Không tìm thấy Case hoặc Case đã được xuất bản" },
+          { status: 404 }
+        );
+      }
+
+      const proposal = result.rows[0];
+      await client.query(
+        `INSERT INTO audit_logs(ticket_id, actor, action, details)
+         VALUES ($1, $2, $3, $4::jsonb)`,
+        [
+          proposal.ticket_id,
+          user.email,
+          status === "Approved"
+            ? "KNOWLEDGE_CASE_APPROVED"
+            : status === "Rejected"
+              ? "KNOWLEDGE_CASE_REJECTED"
+              : "KNOWLEDGE_CASE_UPDATED",
+          JSON.stringify({
+            proposal_id: proposal.id,
+            ticket_no: proposal.ticket_no,
+            status,
+            review_note: body.review_note || "",
+          }),
+        ]
+      );
+
+      await client.query("COMMIT");
+      return NextResponse.json({ proposal });
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Không thể cập nhật Case" },
+      { status: 500 }
+    );
+  }
 }
