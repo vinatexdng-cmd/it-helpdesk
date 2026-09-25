@@ -1,17 +1,19 @@
-.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;background:linear-gradient(120deg,#073e70 0%,#0864ad 55%,#0877c7 100%)}
-.login-card{width:min(480px,100%);padding:34px 36px 28px;border-radius:22px;background:#fff;color:#102f4d;box-shadow:0 24px 70px rgba(0,43,85,.25);text-align:center}
-.login-brand{display:flex;justify-content:center;align-items:center;margin:0 auto 18px}
-.login-brand img{display:block;width:128px;height:128px;object-fit:contain;image-rendering:auto}
-.login-card .eyebrow{font-size:13px;font-weight:800;letter-spacing:.01em;text-transform:none;color:#005baa;background:#eef7ff;border:1px solid #c8e2f6;padding:8px 13px}
-.login-card h1{margin:17px 0 8px;font-size:32px;line-height:1.2;font-weight:800;letter-spacing:-.025em;color:#003b73}
-.login-subtitle{margin:0 0 28px;color:#536d86;font-size:14px;line-height:1.6;font-weight:550}
+.login-page{height:100dvh;min-height:560px;display:flex;align-items:center;justify-content:center;padding:16px 20px;background:linear-gradient(120deg,#073e70 0%,#0864ad 55%,#0877c7 100%);overflow:hidden;box-sizing:border-box}
+.login-card{width:min(460px,100%);max-height:calc(100dvh - 32px);padding:20px 34px 18px;border-radius:22px;background:#fff;color:#102f4d;box-shadow:0 24px 70px rgba(0,43,85,.25);text-align:center;box-sizing:border-box}
+.login-brand{display:flex;justify-content:center;align-items:center;margin:0 auto 8px;height:104px}
+.login-brand img{display:block;width:104px;height:104px;object-fit:contain;image-rendering:auto}
+.login-card .eyebrow{display:inline-block;font-size:13px;font-weight:800;letter-spacing:.01em;text-transform:none;color:#005baa;background:#eef7ff;border:1px solid #c8e2f6;padding:7px 12px;border-radius:999px}
+.login-card h1{margin:12px 0 5px;font-size:31px;line-height:1.15;font-weight:800;letter-spacing:-.025em;color:#003b73}
+.login-subtitle{margin:0 0 18px;color:#536d86;font-size:14px;line-height:1.45;font-weight:600}
 .login-card .form{max-width:none;text-align:left}
-.login-card .form label{gap:8px;margin-bottom:17px;font-size:14px;line-height:1.35;font-weight:750;color:#153653}
-.login-card .form input{height:50px;padding:0 14px;border:1px solid #b9d0e4;border-radius:9px;background:#fff;color:#102f4d;font-size:14px;font-weight:550;box-shadow:inset 0 1px 2px rgba(0,43,85,.025)}
+.login-card .form label{gap:6px;margin-bottom:12px;font-size:14px;line-height:1.3;font-weight:750;color:#153653}
+.login-card .form input{height:48px;padding:0 14px;border:1px solid #b9d0e4;border-radius:9px;background:#fff;color:#102f4d;font-size:14px;font-weight:550;box-shadow:inset 0 1px 2px rgba(0,43,85,.025)}
 .login-card .form input::placeholder{color:#7890a6;font-weight:500;opacity:1}
 .login-card .form input:focus{border-color:#0875c5;box-shadow:0 0 0 3px rgba(8,117,197,.12);outline:none}
-.login-card .form button{width:100%;min-height:42px;margin-top:1px;font-size:14px;font-weight:800;letter-spacing:.005em;background:#0872bf;box-shadow:0 6px 16px rgba(0,91,170,.22)}
+.login-card .form button{width:100%;min-height:42px;margin-top:0;font-size:14px;font-weight:800;letter-spacing:.005em;background:#0872bf;box-shadow:0 6px 16px rgba(0,91,170,.22)}
 .login-card .form button:hover{background:#005baa}
-.login-card .notice{font-size:13px;font-weight:600;line-height:1.5}
-.login-footer{display:block;margin-top:21px;color:#657f97;font-size:10.5px;line-height:1.5;font-weight:700;letter-spacing:.07em}
-@media(max-width:600px){.login-page{padding:24px 14px}.login-card{padding:28px 22px 24px;border-radius:18px}.login-brand img{width:112px;height:112px}.login-card h1{font-size:29px}.login-subtitle{font-size:14px;margin-bottom:24px}}
+.login-card .notice{font-size:13px;font-weight:600;line-height:1.45}
+.login-footer{display:block;margin-top:14px;color:#657f97;font-size:10.5px;line-height:1.4;font-weight:700;letter-spacing:.06em}
+@media(max-height:700px) and (min-width:601px){.login-page{padding:8px 18px}.login-card{max-height:calc(100dvh - 16px);padding:12px 32px 11px;border-radius:18px}.login-brand{height:78px;margin-bottom:5px}.login-brand img{width:78px;height:78px}.login-card .eyebrow{padding:5px 10px;font-size:12px}.login-card h1{margin:8px 0 3px;font-size:27px}.login-subtitle{margin-bottom:10px;font-size:13px}.login-card .form label{margin-bottom:8px}.login-card .form input{height:42px}.login-card .form button{min-height:40px}.login-footer{margin-top:8px;font-size:9.5px}}
+@media(max-width:600px){.login-page{height:100dvh;min-height:0;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));overflow:hidden}.login-card{width:100%;max-width:420px;max-height:calc(100dvh - 24px);padding:18px 18px 16px;border-radius:18px}.login-brand{height:88px;margin-bottom:7px}.login-brand img{width:88px;height:88px}.login-card .eyebrow{font-size:12px;padding:6px 10px}.login-card h1{margin:10px 0 4px;font-size:27px}.login-subtitle{font-size:13px;margin-bottom:15px}.login-card .form label{font-size:13px;margin-bottom:10px}.login-card .form input{height:46px;font-size:16px}.login-card .form button{min-height:44px}.login-footer{margin-top:12px;font-size:9.5px;letter-spacing:.04em}}
+@media(max-width:380px),(max-height:620px){.login-card{padding:12px 16px 11px}.login-brand{height:68px;margin-bottom:4px}.login-brand img{width:68px;height:68px}.login-card .eyebrow{font-size:11px;padding:5px 9px}.login-card h1{margin:7px 0 2px;font-size:24px}.login-subtitle{margin-bottom:8px;font-size:12px}.login-card .form label{gap:4px;margin-bottom:7px;font-size:12px}.login-card .form input{height:40px}.login-card .form button{min-height:39px}.login-footer{margin-top:7px;font-size:8.5px}}
