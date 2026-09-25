@@ -2,6 +2,7 @@
 
 import {useState, type FormEvent} from "react";
 import {useRouter} from "next/navigation";
+import "./login.css";
 
 export default function Login(){
  const [email,setEmail]=useState(""),[password,setPassword]=useState(""),[error,setError]=useState(""),router=useRouter();
