@@ -1,4 +1,60 @@
-import {NextRequest,NextResponse} from "next/server";
-import {verifyToken,SESSION_COOKIE} from "@/lib/session";
-export async function middleware(req:NextRequest){const s=await verifyToken(req.cookies.get(SESSION_COOKIE)?.value);const path=req.nextUrl.pathname;if(!s){if(path.startsWith("/api/"))return NextResponse.json({error:"Unauthorized"},{status:401});const u=req.nextUrl.clone();u.pathname="/login";u.searchParams.set("next",path);return NextResponse.redirect(u)}if(path.startsWith("/admin")&&s.role!=="admin"){const u=req.nextUrl.clone();u.pathname="/";u.search="";return NextResponse.redirect(u)}if(path.startsWith("/dashboard")&&s.role!=="admin"&&s.role!=="it"){const u=req.nextUrl.clone();u.pathname="/";u.search="";return NextResponse.redirect(u)}return NextResponse.next()}
-export const config={matcher:["/","/dashboard/:path*","/tickets/:path*","/knowledge-base/:path*","/api/tickets/:path*","/admin/:path*"]};
+import { NextRequest, NextResponse } from "next/server";
+import { verifyToken, SESSION_COOKIE } from "@/lib/session";
+
+export async function middleware(req: NextRequest) {
+  const session = await verifyToken(req.cookies.get(SESSION_COOKIE)?.value);
+  const path = req.nextUrl.pathname;
+
+  if (!session) {
+    if (path.startsWith("/api/")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const url = req.nextUrl.clone();
+    url.pathname = "/login";
+    url.searchParams.set("next", path);
+    return NextResponse.redirect(url);
+  }
+
+  // Case OpenAI được phép cho cả IT và Admin kiểm duyệt.
+  if (path.startsWith("/admin/knowledge-cases")) {
+    if (session.role !== "admin" && session.role !== "it") {
+      const url = req.nextUrl.clone();
+      url.pathname = "/";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next();
+  }
+
+  // Các chức năng quản trị hệ thống còn lại chỉ dành cho Admin.
+  if (path.startsWith("/admin") && session.role !== "admin") {
+    const url = req.nextUrl.clone();
+    url.pathname = "/";
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
+
+  if (
+    path.startsWith("/dashboard") &&
+    session.role !== "admin" &&
+    session.role !== "it"
+  ) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/";
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    "/",
+    "/dashboard/:path*",
+    "/tickets/:path*",
+    "/knowledge-base/:path*",
+    "/api/tickets/:path*",
+    "/admin/:path*",
+  ],
+};
