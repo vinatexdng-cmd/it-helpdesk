@@ -1,0 +1,17 @@
+.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;background:linear-gradient(120deg,#073e70 0%,#0864ad 55%,#0877c7 100%)}
+.login-card{width:min(480px,100%);padding:34px 36px 28px;border-radius:22px;background:#fff;color:#102f4d;box-shadow:0 24px 70px rgba(0,43,85,.25);text-align:center}
+.login-brand{display:flex;justify-content:center;align-items:center;margin:0 auto 18px}
+.login-brand img{display:block;width:128px;height:128px;object-fit:contain;image-rendering:auto}
+.login-card .eyebrow{font-size:13px;font-weight:800;letter-spacing:.01em;text-transform:none;color:#005baa;background:#eef7ff;border:1px solid #c8e2f6;padding:8px 13px}
+.login-card h1{margin:17px 0 8px;font-size:32px;line-height:1.2;font-weight:800;letter-spacing:-.025em;color:#003b73}
+.login-subtitle{margin:0 0 28px;color:#536d86;font-size:14px;line-height:1.6;font-weight:550}
+.login-card .form{max-width:none;text-align:left}
+.login-card .form label{gap:8px;margin-bottom:17px;font-size:14px;line-height:1.35;font-weight:750;color:#153653}
+.login-card .form input{height:50px;padding:0 14px;border:1px solid #b9d0e4;border-radius:9px;background:#fff;color:#102f4d;font-size:14px;font-weight:550;box-shadow:inset 0 1px 2px rgba(0,43,85,.025)}
+.login-card .form input::placeholder{color:#7890a6;font-weight:500;opacity:1}
+.login-card .form input:focus{border-color:#0875c5;box-shadow:0 0 0 3px rgba(8,117,197,.12);outline:none}
+.login-card .form button{width:100%;min-height:42px;margin-top:1px;font-size:14px;font-weight:800;letter-spacing:.005em;background:#0872bf;box-shadow:0 6px 16px rgba(0,91,170,.22)}
+.login-card .form button:hover{background:#005baa}
+.login-card .notice{font-size:13px;font-weight:600;line-height:1.5}
+.login-footer{display:block;margin-top:21px;color:#657f97;font-size:10.5px;line-height:1.5;font-weight:700;letter-spacing:.07em}
+@media(max-width:600px){.login-page{padding:24px 14px}.login-card{padding:28px 22px 24px;border-radius:18px}.login-brand img{width:112px;height:112px}.login-card h1{font-size:29px}.login-subtitle{font-size:14px;margin-bottom:24px}}
