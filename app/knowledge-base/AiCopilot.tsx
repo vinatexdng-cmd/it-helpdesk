@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import "./AiCopilot.css";
 type Source={title:string;path:string;type:string;url:string;relevance?:number};type Turn={role:"user"|"assistant";content:string};type TicketDraft={title:string;description:string;category:string;priority:string};
 const quickQuestions=["Máy tính không kết nối được WiFi phải xử lý thế nào?","WiFi đã kết nối nhưng không có Internet, cần kiểm tra gì?","Máy in không in được, cần kiểm tra những bước nào?"];
 function renderAnswer(text:string){const lines=text.split("\n");return <div className="kb-rich-answer">{lines.map((line,i)=>{const t=line.trim();if(!t)return <div className="kb-answer-space" key={i}/>;if(t.startsWith("### "))return <h4 key={i}>{inline(t.slice(4))}</h4>;if(t.startsWith("## "))return <h3 key={i}>{inline(t.slice(3))}</h3>;if(t.startsWith("# "))return <h3 key={i}>{inline(t.slice(2))}</h3>;const m=t.match(/^(\d+)\.\s+(.*)$/);if(m)return <div className="kb-answer-step" key={i}><span>{m[1]}</span><p>{inline(m[2])}</p></div>;if(/^[-•]\s+/.test(t))return <div className="kb-answer-bullet" key={i}><span>•</span><p>{inline(t.replace(/^[-•]\s+/,""))}</p></div>;return <p key={i}>{inline(t)}</p>})}</div>}
