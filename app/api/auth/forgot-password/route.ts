@@ -26,7 +26,23 @@ export async function POST(req:NextRequest){
   await p.query("INSERT INTO password_reset_tokens(user_id,token_hash,expires_at) VALUES($1,$2,NOW()+INTERVAL '30 minutes')",[user.id,hash]);
   const origin=(process.env.NEXT_PUBLIC_APP_URL||new URL(req.url).origin).replace(/\/$/,"");
   const resetUrl=`${origin}/reset-password?token=${encodeURIComponent(token)}`;
-  const smtp=smtpConfig(),transport=nodemailer.createTransport({host:smtp.host,port:smtp.port,secure:smtp.secure,auth:{user:smtp.user,pass:smtp.pass}});
+  const smtp=smtpConfig();
+  const transport=nodemailer.createTransport({
+   host:smtp.host,
+   port:smtp.port,
+   secure:smtp.secure,
+   auth:{type:"login",user:smtp.user,pass:smtp.pass},
+   connectionTimeout:15000,
+   greetingTimeout:15000,
+   socketTimeout:20000
+  });
+  try{
+   await transport.verify();
+   console.log(`[forgot-password] SMTP verified: ${smtp.host}:${smtp.port}, auth=LOGIN, secure=${smtp.secure}`);
+  }catch(verifyError){
+   console.error("[forgot-password] SMTP verify failed",verifyError);
+   throw verifyError;
+  }
   const fromAddress=process.env.MAIL_FROM||smtp.user;
   await transport.sendMail({
    from:`"Hệ thống hỗ trợ CNTT Vinatex Đà Nẵng" <${fromAddress}>`,to:user.email,
