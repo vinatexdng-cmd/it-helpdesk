@@ -1,1 +1,4 @@
-import{NextResponse}from"next/server";import{getPool}from"@/lib/db";export const dynamic="force-dynamic";export async function GET(){try{const p=getPool();await p.query("CREATE TABLE IF NOT EXISTS app_settings (key text PRIMARY KEY,value text NOT NULL,updated_at timestamptz NOT NULL DEFAULT now())");const r=await p.query("SELECT value FROM app_settings WHERE key='brand_logo' LIMIT 1");return NextResponse.json({logo:r.rows[0]?.value||"/brand/vinatex-da-nang.png"})}catch{return NextResponse.json({logo:"/brand/vinatex-da-nang.png"})}}
+import{NextResponse}from"next/server";
+export const dynamic="force-dynamic";
+const APPROVED_LOGO="/brand/vinatex-da-nang.svg?v=20260928";
+export async function GET(){return NextResponse.json({logo:APPROVED_LOGO})}
