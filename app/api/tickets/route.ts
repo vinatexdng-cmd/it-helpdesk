@@ -13,7 +13,11 @@ export async function GET(req: NextRequest) {
     const sp = req.nextUrl.searchParams, status = sp.get("status"), priority = sp.get("priority"), sla = sp.get("sla");
     const p = getPool(), isUser = u.role === "user";
     const args: string[] = isUser ? [u.email] : [], clauses = isUser ? ["requester_email=$1"] : [];
-    if (status && status !== "All") { args.push(status); clauses.push("status=$" + args.length); }
+    if (status && status !== "All") {
+      if(status === "In Progress") clauses.push("status IN ('Assigned','In Progress')");
+      else if(status === "Resolved") clauses.push("status IN ('Resolved','Closed')");
+      else { args.push(status); clauses.push("status=$" + args.length); }
+    }
     if (priority && priority !== "All") { args.push(priority); clauses.push("priority=$" + args.length); }
     if (sla && sla !== "All") {
       if (sla === "overdue") clauses.push("sla_due_at IS NOT NULL AND sla_due_at < NOW() AND status NOT IN ('Resolved','Closed')");
@@ -43,23 +47,14 @@ export async function POST(req: NextRequest) {
       const no = "HD-" + year + "-" + String(counter.rows[0].last_number).padStart(6, "0");
       const email = u.role === "user" ? u.email : (b.requester_email || u.email);
       const name = u.role === "user" ? u.name : (b.requester_name || u.name);
-      const r = await client.query("INSERT INTO tickets(ticket_no,title,description,requester_name,requester_email,unit,asset,category,priority,status,assignee,sla_due_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'Open',$10,$11) RETURNING *", [no,title,b.description||null,name,email,b.unit||null,b.asset||null,category,priority,b.assignee||null,slaDue]);
+      const initialStatus=b.assignee?"In Progress":"Open";
+      const r = await client.query("INSERT INTO tickets(ticket_no,title,description,requester_name,requester_email,unit,asset,category,priority,status,assignee,sla_due_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *", [no,title,b.description||null,name,email,b.unit||null,b.asset||null,category,priority,initialStatus,b.assignee||null,slaDue]);
       const ticket = r.rows[0];
       await client.query("INSERT INTO audit_logs(ticket_id,actor,action,details) VALUES($1,$2,$3,$4::jsonb)", [ticket.id,u.email,"Ticket created",JSON.stringify({role:u.role,sla_due_at:slaDue.toISOString()})]);
-
       const priorityLabel: Record<string,string> = {Low:"Thấp",Normal:"Bình thường",High:"Cao",Critical:"Khẩn cấp"};
       const unitText = String(ticket.unit || "Chưa xác định đơn vị");
-      const message = `${name} vừa gửi yêu cầu ${ticket.ticket_no}: “${ticket.title}”. Đơn vị: ${unitText}. Mức ưu tiên: ${priorityLabel[priority] || priority}. Vui lòng kiểm tra, phân loại và giao người phụ trách.`;
-      await client.query(
-        `INSERT INTO notifications(recipient_email,actor_email,type,title,message,link,ticket_id)
-         SELECT staff.email,$1::varchar,'NEW_TICKET'::varchar,$2::varchar,$3::text,$4::text,$5::uuid
-         FROM users staff
-         WHERE lower(staff.role) IN ('it','admin')
-           AND staff.active=TRUE
-           AND lower(staff.email)<>lower($1::varchar)`,
-        [u.email,`Yêu cầu mới ${ticket.ticket_no}`,message,`/tickets/${encodeURIComponent(ticket.ticket_no)}`,ticket.id]
-      );
-
+      const message = `${name} vừa gửi yêu cầu ${ticket.ticket_no}: “${ticket.title}”. Đơn vị: ${unitText}. Mức ưu tiên: ${priorityLabel[priority] || priority}.`;
+      await client.query(`INSERT INTO notifications(recipient_email,actor_email,type,title,message,link,ticket_id) SELECT staff.email,$1::varchar,'NEW_TICKET'::varchar,$2::varchar,$3::text,$4::text,$5::uuid FROM users staff WHERE lower(staff.role) IN ('it','admin') AND staff.active=TRUE AND lower(staff.email)<>lower($1::varchar)`,[u.email,`Yêu cầu mới ${ticket.ticket_no}`,message,`/tickets/${encodeURIComponent(ticket.ticket_no)}`,ticket.id]);
       await client.query("COMMIT");
       return NextResponse.json({ ticket }, { status: 201 });
     } catch (e) { await client.query("ROLLBACK"); throw e; } finally { client.release(); }
